@@ -85,7 +85,7 @@ Full documentation of ansible folder is inside `ansible` folder as `README`
 *~/.ssh/id_rsa.pem* stores SSH private key for SSH connection to EC2 instance. Make sure file is in a .pem format.
 
 Use command below to access EC2 Instance for debugging purposes
-*ssh -i ~/.ssh/filename.pem ec2-user@ipaddress*
+- ssh -i ~/.ssh/filename.pem ec2-user@ipaddress
 
 # Deploy Instructions
 - cd infra
