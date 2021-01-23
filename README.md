@@ -1,4 +1,3 @@
-
 # Analyse Problem
 
 A customer web application using Golang is created. But issue with current application deployment is that it has been manual using ClickOps (Error-prone and time-consuming process of having to click-through various menu options in cloud provider's website, to select and configure the correct infrastructure) and manual configuration management of infrastructure and application itself.
@@ -74,14 +73,19 @@ Configuration management EC2 is using a base linux-2 image so once the IaC has s
 
 Ansible playbook handles download of latest release file from github by sshing through the ec2 instance and place it in the instance. The playbook also handles running of application through a service file. Alongside terraform, both work together to get the correct database configuration through
 
-*~/.ssh/id_rsa.pem* stores SSH private key for SSH connection to EC2 instance. Make sure file is in a .pem format
-
 *.gitignore* under `ansible` folder prevents inventory.yml from being pushed to source control
 
 *.keep* under `templates` is empty file hidden from view acting as  convention around git implying `templates` folder is to be kept. Because,
 git doesn't know what is a folder but it only knows what a file is
 
 Full documentation of ansible folder is inside `ansible` folder as `README`
+
+## SSH
+
+*~/.ssh/id_rsa.pem* stores SSH private key for SSH connection to EC2 instance. Make sure file is in a .pem format.
+
+Use command below to access EC2 Instance for debugging purposes
+*ssh -i ~/.ssh/filename.pem ec2-user@ipaddress*
 
 # Deploy Instructions
 - cd infra

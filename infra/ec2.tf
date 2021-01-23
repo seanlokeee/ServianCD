@@ -8,11 +8,19 @@ resource "aws_key_pair" "ssh_key" {
 #Prebuilt images that installs operating system onto virtual
 #machine
 data "aws_ami" "amazon_linux_2" {
-  most_recent = true
+  most_recent = true #if >1 result is returned, use most recent AMI
   owners      = ["amazon"]
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm*"]
+    values = ["amzn2-ami-hvm*"] # * means all amzn2-ami-hvm 
+  }
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
   }
 }
 

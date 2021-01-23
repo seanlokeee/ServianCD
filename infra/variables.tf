@@ -21,11 +21,15 @@ variable "db_username" {
 }
 
 variable "db_password" {
-  default = "testpass"
+  default = "password"
 }
 
 variable "db_name" {
   default = "serviandb"
+}
+
+variable "db_port" {
+  default = 5432
 }
 
 

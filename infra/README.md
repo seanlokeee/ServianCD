@@ -4,15 +4,15 @@ Terraform works out dependencies between blocks and deploy resources in correct 
 
 ## Plugins
 
-`main.tf` : providers are plugins for terraform using agnostic HCL language to interact with specific vendor APIs like AWS Cloud API
+`main.tf` : Providers are plugins for terraform using agnostic HCL language to interact with specific vendor APIs like AWS Cloud API
 
 ## Variables
 
-`variables.tf` : easy to lookup where things are, preventing scenario where there is difficulty to find variables when they are distributed all over the files
+`variables.tf` : Easy to lookup where things are, preventing scenario where there is difficulty to find variables when they are distributed all over the files
 
 ## Outputs
 
-`outputs.tf` : pass required information to inventory.yml file (E.g. database configuration) for configuration of application and allow these information from commmand line
+`outputs.tf` : Pass required information to inventory.yml file (E.g. database configuration) for configuration of application and allow these information from commmand line
 
 ## Networking Infrastructure
 

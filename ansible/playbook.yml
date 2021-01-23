@@ -2,19 +2,19 @@
   hosts: all #which hosts in inventory to run this against
   gather_facts: yes #gather useful variables about the remote hosts 
   tasks:
-    - name: Download Release Zip File
-      become: yes #sudo 
-      get_url: 
-        url: https://github.com/servian/TechTestApp/releases/download/v.0.6.0/TechTestApp_v.0.6.0_linux64.zip
-        dest: .
-    - name: Unzip Release Zip File
+    - name: Ensure App Directory Exists
+      become: yes
+      file:
+        path: /etc/app
+        state: directory
+    - name: Download & Unzip Release Zip File
       become: yes
       unarchive:
-        src: TechTestApp_v.0.6.0_linux64.zip
-        dest: .
+        src: https://github.com/servian/TechChallengeApp/releases/download/v.0.7.0/TechChallengeApp_v.0.7.0_linux64.zip
+        dest: /etc/app/ #place release files in root for Service File
         #influence whether src to be transferred or is present remotely
         remote_src: yes #go to remote/target machine for the src folder
-    - name: Configure Application with Correct Database Details
+    - name: Configure Application With Correct Database Details
       become: yes
       vars: #template variables to host variables in inventory.yml 
         db_username: "{{ db_username_i }}"
@@ -23,31 +23,25 @@
         db_port: "{{ db_port_i }}"
         db_host: "{{ db_host_i }}"
       template:
-        dest: dist/conf.toml
         src: templates/conf.toml.tpl
-    - name: Create Tables in Database and Seed it with Test Data
-      become: yes
-      shell: 
-        cmd: ./TechTestApp updatedb -s #-s skips creating database itself
-      args:
-        chdir: dist
-    - name: Move Release Files for Correct ListenPort & ListenHost
-      become: yes
-      shell: #move files to the root for Service File
-        cmd: mv dist /etc/app/
-    - name: Copy SystemD Service File to server
+        dest: /etc/app/dist/conf.toml
+    - name: Copy App Service Configuration To Server
       become: yes
       copy:
         src: servian.service
-        dest: /etc/systemd/system/servian.service
-        owner: root
+        dest: /etc/systemd/system/
     - name: Start Service
       become: yes
       systemd:
-        name: servian
+        name: servian.service
         state: started
         enabled: yes #service starts on boot
         daemon_reload: yes #make sure systemd has read any changes
+    - name: Create Tables In Database And Seed it With Test Data
+      become: yes
+      shell: 
+        cmd: ./TechChallengeApp updatedb -s #-s skips creating database itself
+        chdir: /etc/app/dist/
 
 
 
