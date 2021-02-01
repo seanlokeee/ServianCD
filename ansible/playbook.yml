@@ -34,7 +34,8 @@
       become: yes
       systemd:
         name: servian.service
-        state: started
+        state: started #ensure service is started
+        #Auto restart in event of a server reboot
         enabled: yes #service starts on boot
         daemon_reload: yes #make sure systemd has read any changes
     - name: Create Tables In Database And Seed it With Test Data
