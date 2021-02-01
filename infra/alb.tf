@@ -38,7 +38,8 @@ resource "aws_lb_listener" "app_alb_listener" {
   }
 }
 
-#Link load balancer and target group
+#Target group attached to EC2 instance, passing on traffic to port 80
+#ALB forwards all HTTP traffic on port 80 to one specific target group
 resource "aws_alb_target_group_attachment" "ec2_tg" {
   count            = var.instance_count
   target_group_arn = aws_lb_target_group.app_tg.arn

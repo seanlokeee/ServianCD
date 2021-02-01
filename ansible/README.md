@@ -1,15 +1,16 @@
 # Documentation of Ansible Folder
 
-Automate deployment of application to the deployed ec2 instance by setting up a playbook which deploys and configures application on the ec2 instance
+Ansible command in `run_ansible.sh` runs `playbook.yml` against all hosts defined in automatically generated `inventory.yml`. Playbook defines server configuration to deploy against each host defined in inventory
 
 ## Automatically Generate Inventory File
 
-`run_ansible.sh` : Generate an inventory file which provides all necessary configurations (E.g. IP for ssh and database address)
+`run_ansible.sh` : Entry point for setting configuration and deploying application. The script sets environment variables based on outputs from terraform, followed by using these variables in the generation of an inventory.yml file which provides all necessary database configurations to the EC2 host. 
 
-**Final Ansible Command Explanation:**
+The script checks if private key file exists to enable both local and remote pipeline application deployment with same script. If file exists, script runs locally and includes the file in ansible request
+
+**Ansible Command Explanation:**
 - ANSIBLE_HOST_KEY_CHECKING set to false to ignore SSH authenticity checking to avoid any human intervention in middle of script execution
 - record_host_keys set to false to prevent recording of newly discovered and approved hosts in the user's hostfile. This improves performance and is recommended when host key checking is disabled so that don't need to say yes to allow fingerprints so that don't need to say yes to allow fingerprints
-- SSH private key *id_rsa.pem* is provided in *run_ansible.sh* so that playbook.yml tasks run successfully 
 
 ## Ensure App Directory Exists
 
@@ -21,11 +22,11 @@ Automate deployment of application to the deployed ec2 instance by setting up a 
 
 ## Configure Application
 
-`conf.toml.tpl` : Configures *conf.toml* with necessary database configurations in the remote server through variables in the *playbook.yml*. Variables in *playbook.yml* data are automatically fed in through host variables in *inventory.yml* where host variables obtain information through terraform output variables configured in *output.tf*
+`conf.toml.tpl` : Updates one of the unarchived files, *conf.toml* with necessary database configurations in the remote server to suit the cloud infrastructure through variables in the playbook. Playbook variables' data are automatically fed in through host variables in *inventory.yml* where host variables obtain information through terraform output variables configured in *output.tf*
 
 ## Configure Service
 
-`playbook.yml` : After configuration of database details, application is set as a service using SystemD so it will automatically start if the server is rebooted. To do that, service file, *servian.service* is copied to within root so that it executes *TechChallengeApp serve* starting the server only in the configured directory with configured listenport and listenhost. Listenport is 80 because security group allows port 80 HTTP connections through for the application. Listenhost is 0.0.0.0 because security group HTTP connections is configured with CIDR block of 0.0.0.0/0
+`playbook.yml` : After configuration of database details, application is set as a service using SystemD so it will automatically start if the server is rebooted. To do that, a predefined service file, *servian.service* is copied to within root so that it executes *TechChallengeApp serve* starting the server only in the configured directory with configured listenport and listenhost. Listenport is 80 because security group allows port 80 HTTP connections through for the application. Listenhost is 0.0.0.0 because security group HTTP connections is configured with CIDR block of 0.0.0.0/0
 
 ## Configure Database 
 

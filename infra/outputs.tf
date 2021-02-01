@@ -1,3 +1,4 @@
+#provide public URL endpoint accessible via internet browser
 output "alb_endpoint" {
   value = aws_lb.app_alb.dns_name
 }
@@ -13,7 +14,7 @@ output "db_username" {
 
 output "db_password" {
   value     = aws_rds_cluster.db_cluster.master_password
-  sensitive = true
+  sensitive = true #hides password which is outputted
 }
 
 output "db_name" {
