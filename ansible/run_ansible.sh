@@ -1,5 +1,6 @@
+#tells OS to invoke the specified shell to execute commands in this script
 #!/bin/bash
-set +ex
+set +ex #disables printing of executed commands to the terminal
 
 #convert to json format - removing comma, spaces inside brackets and newlines  
 #Acts like an array due to brackets, use jq to extract value of array[0]
@@ -21,9 +22,10 @@ all:
             db_host_i: "${DB_HOST}"
 EOF
 
-FILE=~/.ssh/id_rsa.pem
+FILE=~/.ssh/ServianSSHKeyPair
 if [[ -f "$FILE" ]]; then
+#If file exists, script runs locally, including the file in ansible request
     ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.yml -e 'record_host_keys=False' -u ec2-user --private-key ${FILE} playbook.yml
-else
+else #If file doesn't exist, script runs in pipeline and SSH key is set globally
     ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.yml -e 'record_host_keys=False' -u ec2-user playbook.yml
-fi
+fi #Global SSH key applied to all connections and file not required in the command

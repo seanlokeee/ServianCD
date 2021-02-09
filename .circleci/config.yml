@@ -1,0 +1,32 @@
+version: 2.1
+jobs:
+  scaffold-infra:
+    docker: #Lightweight alpine image - required dependencies must be installed
+      - image: hashicorp/terraform:0.12.25
+    steps:
+      - checkout
+      - run: #Required for executing Makefile commands & running scripts locally
+          name: Install make & bash
+          command: apk add --update make bash
+      - run: #Connection to remote backend must be established & check code state
+          name: Initialise terraform 
+          working_directory: ./infra
+          command: make init
+      - run: #Scaffold all AWS resources required to run application
+          name: Terraform validate, format & apply
+          working_directory: ./infra
+          command: make up
+      - persist_to_workspace: #persist files to be used by another job in workflow
+          root: ./ #root directory of workspace 
+          paths: #persist specified paths from root directory into workspace 
+            - infra #paths values are all relative to the root
+            - ansible #both of these directories are persisted to the next job
+workflows:
+  version: 2
+  deploy-infra-app: #continuously releasing new versions of application and
+    jobs: #infrastructure to customers by iteratively improving upon the solution
+      - scaffold-infra:
+          filters:
+            branches: #CD aims to deploy completed changes to customer facing
+              only: #applications to add additional features or fix issues
+                - master #which snuck in previously

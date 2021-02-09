@@ -14,7 +14,7 @@ output "db_username" {
 
 output "db_password" {
   value     = aws_rds_cluster.db_cluster.master_password
-  sensitive = true #hides password which is outputted
+  sensitive = true #not printed in plaintext when outputted
 }
 
 output "db_name" {
