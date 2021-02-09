@@ -1,7 +1,7 @@
 - name: Deploy Application
   hosts: all #which hosts in inventory to run this against
   gather_facts: yes #gather useful variables about the remote hosts 
-  tasks:
+  tasks: #steps to run against server
     - name: Ensure App Directory Exists
       become: yes
       file:

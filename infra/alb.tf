@@ -16,14 +16,24 @@ resource "aws_lb" "app_alb" {
 
 #Created to define which virtual machines (instances that exist
 #in the cluster) can receive traffic/requests from load balancers
+#LB forwards traffic to target groups based on predefined rules
 resource "aws_lb_target_group" "app_tg" {
-  name     = "${var.name}-${var.env}-tg"
-  port     = 80
+  name = "${var.name}-${var.env}-tg"
+  #LB forwards all HTTP traffic on port 80 to one specific target group
+  port     = 80 #only rule defined for this lb
   protocol = "HTTP"
   vpc_id   = aws_vpc.app_vpc.id
   tags = {
     Name = "${var.name}-${var.env}-tg"
   }
+}
+
+#Target group attached to EC2 instance, passing on traffic to port 80
+resource "aws_alb_target_group_attachment" "ec2_tg" {
+  count            = var.instance_count
+  target_group_arn = aws_lb_target_group.app_tg.arn
+  target_id        = aws_instance.app_ec2[count.index].id
+  port             = 80
 }
 
 #Used to define routing, and ties the port and protocol to the 
@@ -36,13 +46,4 @@ resource "aws_lb_listener" "app_alb_listener" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.app_tg.arn
   }
-}
-
-#Target group attached to EC2 instance, passing on traffic to port 80
-#ALB forwards all HTTP traffic on port 80 to one specific target group
-resource "aws_alb_target_group_attachment" "ec2_tg" {
-  count            = var.instance_count
-  target_group_arn = aws_lb_target_group.app_tg.arn
-  target_id        = aws_instance.app_ec2[count.index].id
-  port             = 80
 }

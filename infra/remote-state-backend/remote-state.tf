@@ -1,5 +1,5 @@
-#Plugins which have access to specific vendor APIs
-provider "aws" {
+#Defines cloud provider as AWS and configures remote backend
+provider "aws" { #to utilise S3 and DynamoDB
   region  = "us-east-1"
   version = "~>2.23"
 }

@@ -12,13 +12,16 @@ Terraform works out dependencies between blocks and deploy resources in correct 
 
 ## Outputs
 
-`outputs.tf` : Pass required information to inventory.yml file (E.g. database configuration) for configuration of application and allow these information from commmand line
+`outputs.tf` : Once the infrastructure has been created, it defines outputs that can be accessed locally or used to set environment variables, thus providing access to endpoints etc that can be used for passing required data to inventory.yml file for configuration of application & server
 
 ## Networking Infrastructure
 
-`vpc.tf` : VPC, a private cloud environment houses all services for the hosting and running of the application and database. Internet gateway configured with route table manages all traffic in and out of the network, requiring routing rules to allow internet access to and from services in VPC
+`vpc.tf` : VPC, a private cloud environment houses all services for the hosting and running of the application and database. Internet gateway configured with a defualt route table manages all traffic in and out of the network, requiring routing rules to allow internet access to and from services in VPC
 
-VPC configured with 3 layers (Public - internet facing services, Private - services hidden from public internet and Data - services hidden from public internet with restricted access from private services) across 3 availability zones, amounting to 9 subnets.
+VPC is configured with 3 layers across 3 availability zones, amounting to 9 subnets
+ - Public: Internet facing services (Application Load Balancer)
+ - Private: Services hidden from public internet (EC2 Instance)
+ - Data: Services hidden from public internet with restricted access from private services (The Database)
 
 **Purpose:** 
 1. VPC acts as a boundary box of a home network. Thus, it is the boundary defining the cloud environment. It is everything behind a WIFI router, connected to internet connection in a home network. Thus, services are deployed within VPC
@@ -29,7 +32,7 @@ VPC configured with 3 layers (Public - internet facing services, Private - servi
 
 ## 3 Layer Infrastructure
 
-`sg.tf` : Each layer has security groups defined to limit access, acting as firewalls. Security group is used as a software defined firewall for each individual to define which connections are allowed in and on which ports (ingress), as well as outgoing (egress). So that, infrastructure is configured for restricted access, only allowing explicit connections by denying unpermitted access
+`sg.tf` : Each layer has security groups setup to limit access, acting as software defined firewalls. This define which connections are allowed in and on which ports (ingress), as well as outgoing (egress). So that, infrastructure is configured for restricted access, only allowing explicit connections by denying unpermitted access
 
 ### Load Balancer (Public Layer)
 
@@ -42,7 +45,7 @@ VPC configured with 3 layers (Public - internet facing services, Private - servi
 
 ### EC2 Instance (Private Layer)
 
-`ec2.tf` : An EC2 instance deployed in private layer using latest Amazon Linux image (base linux-2). EC2 instance is backed by elastic block storage (EBS) to provide storage for virtual machine and allow customization through payment for larger storage. To logon to the instance after deployment, key-pairs are used because it allows secure SSH communications only when private key is included in connection request
+`ec2.tf` : An EC2 instance deployed in private layer using latest Amazon Linux image (base linux-2). EC2 instance is backed by elastic block storage (EBS) to provide storage for virtual machine and allows customization through payment for larger storage. Key-pairs allows secure SSH communications only when the private key is included in the connection request
 
 **Purpose:**
 - Build application and once inside the ami, take a snapshot of the virtual machine to allow deployment of multiple applications
@@ -55,7 +58,7 @@ VPC configured with 3 layers (Public - internet facing services, Private - servi
 `db.tf` : A database, Aurora Postgresql is deployed in data layer as a relational database service. It is a managed database service where AWS runs and maintains underlying hosts while running database on top of the instances
 
 **Purpose:**
-- Database configured as serverless so that it only runs when required, saving costs if database is used infrequently. Downside of this is a delay on first request from a cold start might be present due to taking time for database to spin up
+- Database is configured as serverless so that it only runs when required, saving costs if database is used infrequently. Downside of this is that there is a delay on first request from a cold start due to taking time for database to spin up
 - Able to create new databases and manage them individually because have full control over what users can access to
 - Low difficulty of managing databases as half of the job of managing has been taken care of. In addition, RDS snapshots the database so have backups available if something happens
 
@@ -67,5 +70,5 @@ VPC configured with 3 layers (Public - internet facing services, Private - servi
 1. Since terraform.tfstate is created on local filesystem, when it comes to working in a team, other team members don't have visibility & access to it except for yourself. So, when another team member executes the same terraform operations, a new state file is created which would be different from your machine's state file
 2. Locking state file is required because without it, if 2 team members are running terraform operations concurrently, race conditions can occur. As multiple terraform processes update the state file concurrently, conflicts occur which cause data loss and file corruption
 3. State file can contain sensitive data (E.g. RDS password) which must not be uploaded to source control systems like Github
-4. Isolation is another problem which is tackled by remote backend and locking. The whole point of having separate environments is to isolate them from each other. So if a single set of terraform configurations is managing all the environments, the isolation rule is broken
+4. Isolation is another problem which is tackled by remote backend and locking. The whole point of having separate environments is to isolate them from each other. So if a single set of terraform config is managing all the environments, the isolation rule is broken
 5. Useful for debugging and rolling back to older versions if something goes wrong as the s3 bucket is storing every revision of the state file

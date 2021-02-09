@@ -1,16 +1,16 @@
 # Documentation of Ansible Folder
 
-Ansible command in `run_ansible.sh` runs `playbook.yml` against all hosts defined in automatically generated `inventory.yml`. Playbook defines server configuration to deploy against each host defined in inventory
+Ansible command in `run_ansible.sh` runs `playbook.yml` against all hosts in automatically generated `inventory.yml`. Playbook defines server configuration to deploy against each host defined in inventory
 
 ## Automatically Generate Inventory File
 
-`run_ansible.sh` : Entry point for setting configuration and deploying application. The script sets environment variables based on outputs from terraform, followed by using these variables in the generation of an inventory.yml file which provides all necessary database configurations to the EC2 host. 
+`run_ansible.sh` : Entry point for setting configuration and deploying application. The script sets environment variables based on outputs from terraform, followed by using these variables in the generation of an inventory.yml file which provides all necessary database config to the EC2 host
 
-The script checks if private key file exists to enable both local and remote pipeline application deployment with same script. If file exists, script runs locally and includes the file in ansible request
+The script checks if private key file exists to enable both local and CD remote pipeline application deployment within the same script 
 
 **Ansible Command Explanation:**
 - ANSIBLE_HOST_KEY_CHECKING set to false to ignore SSH authenticity checking to avoid any human intervention in middle of script execution
-- record_host_keys set to false to prevent recording of newly discovered and approved hosts in the user's hostfile. This improves performance and is recommended when host key checking is disabled so that don't need to say yes to allow fingerprints so that don't need to say yes to allow fingerprints
+- record_host_keys set to false to prevent recording of newly discovered and approved hosts in the user's hostfile. This improves performance and is recommended when host key checking is disabled so that don't need to say yes to allow fingerprints
 
 ## Ensure App Directory Exists
 
@@ -22,7 +22,7 @@ The script checks if private key file exists to enable both local and remote pip
 
 ## Configure Application
 
-`conf.toml.tpl` : Updates one of the unarchived files, *conf.toml* with necessary database configurations in the remote server to suit the cloud infrastructure through variables in the playbook. Playbook variables' data are automatically fed in through host variables in *inventory.yml* where host variables obtain information through terraform output variables configured in *output.tf*
+`conf.toml.tpl` : Updates one of the unarchived files, *conf.toml* with necessary database config in the remote server to suit the cloud infrastructure through variables in the playbook. Playbook variables' data are automatically fed in through host variables in *inventory.yml* where host variables obtain information through terraform output variables configured in *output.tf*
 
 ## Configure Service
 
