@@ -8,7 +8,7 @@ jobs:
       - run: #Required for executing Makefile commands & running scripts locally
           name: Install make & bash
           command: apk add --update make bash
-      - run: #Connection to remote backend must be established & check code state
+      - run: #Connection to the remote backend built in local setup is established here
           name: Initialise terraform 
           working_directory: ./infra
           command: make init
