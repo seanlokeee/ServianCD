@@ -2,12 +2,12 @@ version: 2.1
 jobs:
   scaffold-infra:
     docker: #Lightweight alpine image - required dependencies must be installed
-      - image: hashicorp/terraform:0.12.25
+      - image: hashicorp/terraform:0.12.25 #must be older version than local version
     steps:
-      - checkout
+      - checkout #checks out the source code from the repository
       - run: #Required for executing Makefile commands & running scripts locally
-          name: Install make & bash
-          command: apk add --update make bash
+          name: Install make & bash #get latest list of available packages, using
+          command: apk add --update make bash #update command
       - run: #Connection to the remote backend built in local setup is established here
           name: Initialise terraform 
           working_directory: ./infra
@@ -21,6 +21,31 @@ jobs:
           paths: #persist specified paths from root directory into workspace 
             - infra #paths values are all relative to the root
             - ansible #both of these directories are persisted to the next job
+  
+  deploy-configure-app:
+    docker: #Ansible utilises python so image below can run the ansible commands
+      - image: python:rc-alpine #comes with python preconfigured 
+        environment: #define terraform version to download. If image in scaffold-infra job
+          - TERRAFORM_VERSION: 0.12.25 #is updated, variable is updated to suit new version
+    steps:
+      - attach_workspace: #persisted workspace from previous job re-attached to current job
+          at: ./ #full contents of workspace are downloaded and copied into root directory
+      - run:
+          name: Install dependencies #required by ansible scripts
+          command: apk add ansible bash curl jq #curl fetches terraform version .zip
+      - run:
+          name: Install terraform
+          command: |
+            cd /usr/local/bin
+            curl https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+            unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+            rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+      - run: #Deploy application and configuration to the EC2 Instance
+          name: Run playbook against all hosts in inventory
+          working_directory: ./ansible
+          command: |
+            sh run_ansible.sh
+
 workflows:
   version: 2
   deploy-infra-app: #continuously releasing new versions of application and
@@ -30,3 +55,6 @@ workflows:
             branches: #CD aims to deploy completed changes to customer facing
               only: #applications to add additional features or fix issues
                 - master #which snuck in previously
+      - deploy-configure-app:
+          requires:
+            - scaffold-infra
