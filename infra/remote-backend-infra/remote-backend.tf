@@ -1,5 +1,5 @@
-#Defines cloud provider as AWS and configures remote backend
-provider "aws" { #to utilise S3 and DynamoDB
+#Defines cloud provider as AWS
+provider "aws" {
   region  = "us-east-1"
   version = "~>2.23"
 }
@@ -8,7 +8,7 @@ provider "aws" { #to utilise S3 and DynamoDB
 resource "aws_s3_bucket" "tf_state_s3" {
   #s3 bucket name is globally unique across all regions and aws accounts
   #creating bucket names must be unique (E.g. concatenating account ID)
-  bucket = "tf-state-s3654762-bucket"
+  bucket = "tf-state-s3654762-s3bucket"
   versioning { #To see full revision history of state files
     enabled = true
   }
@@ -24,7 +24,7 @@ resource "aws_s3_bucket" "tf_state_s3" {
     prevent_destroy = true
   }
   tags = {
-    Name = "TF Remote State"
+    Name = "TF Remote State S3 Bucket"
   }
 }
 
@@ -32,7 +32,7 @@ resource "aws_s3_bucket" "tf_state_s3" {
 #DynamoDB's distributed key-value store supports strongly-consistent reads
 #& conditional writes - ingredients needed for a distributed lock system
 resource "aws_dynamodb_table" "tf_state_lock_dynamodb" {
-  name           = "tf-state-lock-dynamodb"
+  name           = "tf-state-dynamodb-lock"
   hash_key       = "LockID"
   read_capacity  = 20
   write_capacity = 20
@@ -41,7 +41,7 @@ resource "aws_dynamodb_table" "tf_state_lock_dynamodb" {
     type = "S"
   }
   tags = {
-    Name = "TF Remote State Lock"
+    Name = "TF Remote State DynamoDB Lock"
   }
 }
 

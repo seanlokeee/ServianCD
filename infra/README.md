@@ -4,7 +4,7 @@ Terraform works out dependencies between blocks and deploy resources in correct 
 
 ## Plugins
 
-`main.tf` : Providers are plugins for terraform using agnostic HCL language to interact with specific vendor APIs like AWS Cloud API
+`main.tf` : Providers are plugins for terraform using agnostic HCL language to interact with specific vendor APIs like AWS Cloud API. Aside from determining AWS connection for the main cloud infrastructure, remote backend connection for remote storage of terraform state file is determined as well
 
 ## Variables
 
@@ -64,11 +64,11 @@ VPC is configured with 3 layers across 3 availability zones, amounting to 9 subn
 
 ## Remote Backend
 
-`remote-state.tf` : Terraform keeps track of environment changes by creating *terraform.tfstate* in local filesystem. The state file is a small database storing environment state. Whenever you run terraform plan, apply or destroy command, it reads the current state from the state file and applies changes to it
+`remote-backend.tf` : Contains an s3 bucket and a dynamoDB table ready to be built on AWS to maintain terraform state file remotely. DynamoDB locks the file when terraform operations are simultaneously being performed while s3 bucket stores it remotely
 
 **Reason To Transition To Remote Backend:**
-1. Since terraform.tfstate is created on local filesystem, when it comes to working in a team, other team members don't have visibility & access to it except for yourself. So, when another team member executes the same terraform operations, a new state file is created which would be different from your machine's state file
-2. Locking state file is required because without it, if 2 team members are running terraform operations concurrently, race conditions can occur. As multiple terraform processes update the state file concurrently, conflicts occur which cause data loss and file corruption
+1. If terraform.tfstate is created on local filesystem, when it comes to working in a team, other team members don't have visibility & access to it except for yourself. So, when another team member executes the same terraform operations, a new state file is created which is different from your machine's state file
+2. By locking the state file, it ensures 1 terraform source can only apply changes to the cloud infrastructure at any one point in time, protecting against corrupted / mismatched versions of cloud infra. **(E.g. 2 team members are running terraform operations concurrently, race conditions can occur due to conflicts)** 
 3. State file can contain sensitive data (E.g. RDS password) which must not be uploaded to source control systems like Github
 4. Isolation is another problem which is tackled by remote backend and locking. The whole point of having separate environments is to isolate them from each other. So if a single set of terraform config is managing all the environments, the isolation rule is broken
-5. Useful for debugging and rolling back to older versions if something goes wrong as the s3 bucket is storing every revision of the state file
+5. Useful for debugging and rolling back to older versions if something goes wrong as the s3 bucket is storing every revision of the state file. 
