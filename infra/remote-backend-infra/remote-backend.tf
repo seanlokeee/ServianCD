@@ -1,7 +1,6 @@
 #Defines cloud provider as AWS
 provider "aws" {
   region  = "us-east-1"
-  version = "~>2.23"
 }
 
 #store terraform state file in s3 bucket with encryption and locking

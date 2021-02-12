@@ -56,7 +56,7 @@ IaC files are located in `infra` folder which contains IaC required to host, acc
 
 Value of terraform variables can be provided in different ways but method used here is through environment variables starting with **TF_VAR_** . If deployment is done through pipeline, variable is preconfigured in CircleCI setup
 
-**destroyinfra.sh** under `infra` utilises the same concept as **deployinfra.sh** but for tearing down all infrastructure except for the remote backend storing the state. Therefore, both scripts enable cloud infra to be deployed & destroyed from a local machine and in the pipeline with the same script command
+**destroyinfra.sh** under `infra` utilises the same concept as `deployinfra.sh` but for tearing down all infrastructure except for the remote backend storing the state. Therefore, both scripts enable cloud infra to be deployed & destroyed from a local machine and in the pipeline with the same script command
 
 **makefiles** standardise and simplify terraform commands which speeds up the process of running the commands
 
@@ -81,7 +81,7 @@ Full documentation of ansible folder is inside `ansible` folder as `README`
 ## Local Dependencies
 
 Although deployment process is fully automated, some initial setup is required before running the pipeline:
-- To set up base configuration for the pipeline and enable local terraform commands, terraform CLI must be installed
+- To set up base configuration for the pipeline and enable local terraform commands, terraform CLI must be installed. Make sure the local terraform version is newer or the same version as the CircleCI image terraform version.
 - Make is required to execute Makefile commands
 - Installing ansible to command line to run ansible commands as well as jq. jq is a lightweight and flexible command-line JSON processor used in ansible/run_ansible.sh script to extract the ec2 host ip address
 
@@ -104,7 +104,7 @@ Ensure **SSH KEY** step from local setup is completed prior to attempting pipeli
 As the pipeline is adding resources inside AWS, as well as SSH'ing into running EC2 instance, AWS credentials and SSH key pair must be set up as CircleCI global environment variables for the pipeline to execute. To do so, make sure CircleCI project is linked with the git repository before attempting the following steps:
 1. Click on the project settings button followed by selecting environment variables section
 2. Add environment variables for the fields in AWS credentials obtained from your security credentials in AWS management console. Ensure the variable names are all capitals and values are all a single line of text
-3. `cat ~/.ssh/ServianSSHKeyPair.pub | pbcopy` outputs file's contents & copies them. Add an environment variable, **TF_VAR_public_key**, paste the output into the value field and remove **root@XXXX-MacBook-Pro.local** portion at the end of the key
+3. `cat ~/.ssh/ServianSSHKeyPair.pub | pbcopy` outputs file's contents & copies them. Add an environment variable, **TF_VAR_public_key**, paste the output into the value field
 4. Select SSH Keys section of project settings menu and repeat the same command in step 3 but with `~/.ssh/ServianSSHKeyPair`. Add SSH Key, paste the output into the private key field and leave the hostname blank so that the key is used for all hosts
 
 Pipeline is ready to commit `config.yml` to the master branch, automatically initiating it
@@ -113,27 +113,28 @@ Pipeline is ready to commit `config.yml` to the master branch, automatically ini
 ## Local Deploy
 Ensure all steps in local dependencies & local setup are completed prior to attempting local deployment 
 
-To deploy app locally:
+To see a fully configured & operational application on AWS through local terminal:
 - change current directory to within infra folder
 - make init (connection to the remote backend built in local setup is established here)
 - make up (scaffold all AWS resources required to run the application)
 - change current directory to within ansible folder
 - sh run_ansible.sh (once this is done, change back to infra folder)
-- make albendpoint & paste it into a browser to see a fully configured & operational application (there might be a delay response from aurora serverless db)
+- make albendpoint & paste it into a browser (delayed response from aurora db might arise)
 
 ## Pipeline Deploy
 Ensure **REMOTE BACKEND INFRA** step from local setup is completed and all steps in pipeline setup are completed prior to attempting pipeline deployment
 
-To deploy app automatically: 
-- push into a branch & merge pull request to trigger the master branch or manually trigger the pipeline build in CircleCI
-- when the pipeline completes scaffold-infra job, note down alb_endpoint in the CircleCI output of **Terraform validate, format & apply** step 
-- once the pipeline has finished, paste alb_endpoint noted down earlier into a browser to see a fully configured & operational application
+To see a fully configured & operational application on AWS through CircleCI CD Pipeline:
+- push into a branch & merge pull request to trigger the master branch or manually trigger the pipeline build in CircleCI (local terraform version must be newer than image version)
+- when the pipeline completes scaffold-infra job, note down alb_endpoint in CircleCI output
+- once the pipeline has finished, paste alb_endpoint noted down earlier into a browser
 
 # Cleanup Instructions
 
 To destroy the application and associated cloud infra:
-- change current directory to within infra folder
-- make down (tears down all deployed resources except for remote backend setup)
+- change current directory to within infra folder & make init to access remote state file
+- if Error: Invalid legacy provider address, terraform state replace-provider -- -/aws hashicorp/aws to update provider in state file by upgrading the syntax. Re-run make init
+- make down (able to delete infra locally now because local is connected to remote backend)
 
 Remote backend must be manually destroyed as it is protected:
 - Head to AWS s3 Management Console, navigate to tf-state-s3654762-bucket
