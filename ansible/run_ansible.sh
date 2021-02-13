@@ -16,11 +16,11 @@ cat << EOF > inventory.yml
 all: 
     hosts:
         ${HOSTS_IP}:
-            db_username_i: "${DB_USER}" 
-            db_password_i: "${DB_PASS}" 
-            db_name_i: "${DB_NAME}"
-            db_port_i: "${DB_PORT}"
-            db_host_i: "${DB_HOST}"
+            db_username_i: ${DB_USER} 
+            db_password_i: ${DB_PASS} 
+            db_name_i: ${DB_NAME}
+            db_port_i: ${DB_PORT}
+            db_host_i: ${DB_HOST}
 EOF
 
 FILE=~/.ssh/ServianSSHKeyPair

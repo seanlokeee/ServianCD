@@ -32,7 +32,7 @@ VPC is configured with 3 layers across 3 availability zones, amounting to 9 subn
 
 ## 3 Layer Infrastructure
 
-`sg.tf` : Each layer has security groups setup to limit access, acting as software defined firewalls. This define which connections are allowed in and on which ports (ingress), as well as outgoing (egress). So that, infrastructure is configured for restricted access, only allowing explicit connections by denying unpermitted access
+`sg.tf` : Each layer has security groups setup to limit access, acting as software defined firewalls. This define which connections are allowed in and on which ports (ingress), as well as outgoing (egress). So that, infra is configured for restricted access, only allowing explicit connections by denying unpermitted access
 
 ### Load Balancer (Public Layer)
 

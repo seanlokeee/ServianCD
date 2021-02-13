@@ -32,8 +32,8 @@ Choice of AWS is due to personal preference not due to AWS being better than ano
 Cloud infra is written as Infrastructure as Code (IaC), using a cloud agnostic language, HashiCorp Configuration Language (HCL), which is executed using HashiCorp Terraform CLI tool. The purpose of IaC is to manage state of the deployed resources by tracking or reverting any configuration drift in the environment. This ensures test and production are close as they can be so that deployment to production has less risk of issues popping up
 
 **Advantageous Scenarios:**
-- By deploying and destroying infrastructure using code, predefined patterns can be created to stand up the application infra and stamp out new environments on demand in a short timespan
-- Ease to deploy infrastructure on different cloud providers with all the same tools because only cloud specific configuration alterations are required
+- By deploying and destroying in IaC, predefined patterns can be created to stand up the application's infra and stamp out new environments on demand in a short timespan
+- Ease to deploy infra on different cloud providers with all the same tools because only cloud specific configuration alterations are required
 
 ### Configuration Management Overview (Ansible)
 
@@ -129,12 +129,12 @@ Ensure **REMOTE BACKEND INFRA** step from local setup is completed and all steps
 To see a fully configured & operational application on AWS through CircleCI CD Pipeline:
 - push into a branch & merge pull request to trigger the master branch or manually trigger the pipeline build in CircleCI (local terraform version should be same as image version)
 - when the pipeline completes scaffold-infra job, note down alb_endpoint in CircleCI output
-- once the pipeline has finished, paste alb_endpoint noted down earlier into a browser
+- once pipeline has finished, paste alb_endpoint noted down earlier into a browser
 
 # Cleanup Instructions
 
 To destroy the application and associated cloud infra:
-- change current directory to within infra folder & make init to access remote state file
+- change current directory to within infra folder & `make init` to access remote state file
 - IF Error: Invalid legacy provider address, `terraform state replace-provider -- -/aws hashicorp/aws` to update provider in state file by upgrading the syntax. Re-run `make init`
 - `make down` (able to delete infra locally because local is connected to remote backend)
 
