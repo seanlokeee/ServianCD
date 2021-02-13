@@ -71,4 +71,4 @@ VPC is configured with 3 layers across 3 availability zones, amounting to 9 subn
 2. By locking the state file, it ensures 1 terraform source can only apply changes to the cloud infrastructure at any one point in time, protecting against corrupted / mismatched versions of cloud infra. **(E.g. 2 team members are running terraform operations concurrently, race conditions can occur due to conflicts)** 
 3. State file can contain sensitive data (E.g. RDS password) which must not be uploaded to source control systems like Github
 4. Isolation is another problem which is tackled by remote backend and locking. The whole point of having separate environments is to isolate them from each other. So if a single set of terraform config is managing all the environments, the isolation rule is broken
-5. Useful for debugging and rolling back to older versions if something goes wrong as the s3 bucket is storing every revision of the state file. 
+5. Useful for debugging and rolling back to older versions if something goes wrong as the s3 bucket is storing every revision of the state file
