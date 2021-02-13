@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   scaffold-infra:
     docker: #Lightweight alpine image - required dependencies must be installed
-      - image: hashicorp/terraform:0.12.25 #must be older version than local version
+      - image: hashicorp/terraform:0.14.6 #should be same version as local version
     steps:
       - checkout #checks out the source code from the repository
       - run: #Required for executing Makefile commands & running scripts locally
@@ -24,9 +24,9 @@ jobs:
   
   deploy-configure-app:
     docker: #Ansible utilises python so image below can run the ansible commands
-      - image: python:rc-alpine #comes with python preconfigured 
+      - image: python:rc-alpine #smaller in size than docker python image 
         environment: #define terraform version to download. If image in scaffold-infra job
-          - TERRAFORM_VERSION: 0.12.25 #is updated, variable is updated to suit new version
+          - TERRAFORM_VERSION: 0.14.6 #is updated, variable is updated to suit new version
     steps:
       - attach_workspace: #persisted workspace from previous job re-attached to current job
           at: ./ #full contents of workspace are downloaded and copied into root directory
