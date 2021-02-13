@@ -32,7 +32,7 @@ jobs:
           at: ./ #full contents of workspace are downloaded and copied into root directory
       - run: #curl fetches terraform version .zip
           name: Install dependencies #required by ansible scripts
-          command: apk add ansible bash curl jq cat
+          command: apk add ansible bash curl jq
       - run:
           name: Install terraform
           command: |

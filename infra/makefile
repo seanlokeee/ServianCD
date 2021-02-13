@@ -5,9 +5,9 @@ init: #validate backend config and create statefile if doesn't exist
 #to download and make environment ready accordingly
 	terraform init
 
-#give access to value directly - clean string
-albendpoint: #pbcopy copies string of the value
-	terraform output alb_endpoint | pbcopy
+#access value directly - clean string (remove " start & end)
+albendpoint: #prints string with no extra escaping or whitespace & copy value
+	terraform output -raw alb_endpoint | pbcopy
 
 up: #validate code, format indentations & styling correctly and deploy
 	terraform validate
