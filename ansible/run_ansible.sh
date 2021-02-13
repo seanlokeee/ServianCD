@@ -11,6 +11,7 @@ DB_NAME=$(cd ../infra && terraform output db_name)
 DB_PORT=$(cd ../infra && terraform output db_port)
 DB_HOST=$(cd ../infra && terraform output db_host)
 
+#overwrite with new contents in existing inventory or create new file with contents
 cat << EOF > inventory.yml
 all: 
     hosts:

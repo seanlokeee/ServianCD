@@ -81,7 +81,7 @@ Full documentation of ansible folder is inside `ansible` folder as `README`
 ## Local Dependencies
 
 Although deployment process is fully automated, some initial setup is required before running the pipeline:
-- To set up base configuration for pipeline and enable local terraform commands, terraform CLI is installed. Make sure local terraform version is same as the version under CircleCI job's docker image in `config.yml` if not error refreshing state pops out
+- To set up base configuration for pipeline and enable local terraform commands, terraform CLI is installed. Make sure local terraform version is same as the version under CircleCI job's docker image in `config.yml` if not **error refreshing state** pops out
 - Make is required to execute Makefile commands
 - Install ansible & jq to run ansible commands & to extract the ec2 host ip address. jq is a lightweight & flexible command-line JSON processor used in `run_ansible.sh`
 
@@ -135,7 +135,7 @@ To see a fully configured & operational application on AWS through CircleCI CD P
 
 To destroy the application and associated cloud infra:
 - change current directory to within infra folder & make init to access remote state file
-- if Error: Invalid legacy provider address, `terraform state replace-provider -- -/aws hashicorp/aws` to update provider in state file by upgrading the syntax. Re-run `make init`
+- IF Error: Invalid legacy provider address, `terraform state replace-provider -- -/aws hashicorp/aws` to update provider in state file by upgrading the syntax. Re-run `make init`
 - `make down` (able to delete infra locally because local is connected to remote backend)
 
 Remote backend must be manually destroyed as it is protected:
