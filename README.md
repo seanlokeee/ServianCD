@@ -159,8 +159,11 @@ To destroy the application and associated cloud infra:
 
 Remote backend must be manually destroyed as it is protected:
 - Head to AWS s3 Management Console, navigate to tf-state-s3654762-bucket
+![](images/s3bucket.png)
 - Select list versions, select all and click delete
+![](images/listversions.png)
 - Proceed to delete the s3 bucket as terraform state files have been deleted
+![](images/deletebucket.png)
 - Head to dynamoDB tables and delete tf-state-lock-dynamodb (lock table)
-
+![](images/dynamoDB.png)
 
