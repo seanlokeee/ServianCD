@@ -23,7 +23,7 @@ Difference between CI & CD is that CI is targeting **Software Development** whil
 
 ## Why Continuous Deployment (CD)?
 
-A CD pipeline under `.circleci` is implemented to automatically scaffold the cloud infrastructure, retrieve the latest release from application's GIT repository and deploy it into an EC2 instance as a fully configured, operational & restartable service. Required database configuration is automatically generated for db connections. The database is migrated and seeded within the automated CD process
+A CD pipeline under `.circleci` is implemented to automatically scaffold the cloud infrastructure, retrieve the release from application's GIT repository and deploy it into an EC2 instance as a fully configured, operational & restartable service. Required database configuration is automatically generated for db connections. The database is migrated and seeded within the automated CD process
 
 ### Cloud Infrastructure Overview (AWS & Terraform)
 
@@ -68,7 +68,7 @@ Full documentation of terraform folder is inside `infra` folder as `README`
 
 As EC2 is using a base linux-2 image, so once the IaC has successfully scaffolded, the server is configured with the application and it's associated configuration
 
-A SSH public and private key pair must be generated for connecting securely into the ec2 instance. Public key is set so that it can be attached to the EC2 instance for secure SSH communication while private key is used for final communication as shown below through local terminal for debugging purposes
+SSH public and private key pair is generated for connecting securely into the ec2 instance. Public key is set so that it is attached to the EC2 instance for secure SSH communication while private key is used for final communication as shown below through local terminal for debugging purposes
 - ssh -i ~/.ssh/ServianSSHKeyPair ec2-user@ipaddress
 
 **.keep** under `templates` is empty file hidden from view acting as convention around git implying an empty folder must be kept. This is because git doesn't know what is a folder but only knows what a file is. 

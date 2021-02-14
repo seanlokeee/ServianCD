@@ -16,7 +16,7 @@ Terraform works out dependencies between blocks and deploy resources in correct 
 
 ## Networking Infrastructure
 
-`vpc.tf` : VPC, a private cloud environment houses all services for the hosting and running of the application and database. Internet gateway configured with a defualt route table manages all traffic in and out of the network, requiring routing rules to allow internet access to and from services in VPC
+`vpc.tf` : VPC, a private cloud environment houses all services for the hosting and running of the application and database. Internet gateway configured with a default route table manages all traffic in and out of the network, requiring routing rules to allow internet access to and from services in VPC
 
 VPC is configured with 3 layers across 3 availability zones, amounting to 9 subnets
  - Public: Internet facing services (Application Load Balancer)
