@@ -89,13 +89,19 @@ Although deployment process is fully automated, some initial setup is required b
 
 **SSH KEY:** pair is created by `sudo sh generate-sshkey.sh` from root directory of repository. `sudo` allows overwriting of existing key pair due to superuser's permission 
 
+![](images/gensshkey.png)
+
 **AWS CREDENTIALS:** required to apply terraform scripts to scaffold aws resources.
 **~/.aws/credentials** stores AWS credentials copied from your security credentials in AWS management console. Terraform can automatically search for saved API credentials so there is no need to explitly define them in .tf files. This protects the credentials when the files are checked into github
+
+![](images/localawscreds.png)
 
 **REMOTE BACKEND INFRA:** is built before defining it's remote connection. Thus, the infra is created in a separate folder than the main infra because `main.tf` contains the remote backend connection which enables remote storage of the main infra terraform state file
 1. `cd infra/remote-backend-infra`  
 2. `make init` - defining local terraform state file for creating s3 & dynamoDB
 3. `make check` followed by `make up` (validate, format, plan -> apply)
+
+![](images/backendinfradeploy.png)
 
 ## Pipeline Setup
 
@@ -103,9 +109,13 @@ Ensure **SSH KEY** step from local setup is completed prior to attempting pipeli
 
 As the pipeline is adding resources inside AWS, as well as SSH'ing into running EC2 instance, AWS credentials and SSH key pair must be set up as CircleCI pipeline environment variables for the pipeline to execute. Make sure CircleCI project is linked with the git repository before attempting the following steps:
 1. Click on the project settings button followed by selecting environment variables section
+![](images/projectsettings.png)
 2. Add environment variables for the fields in AWS credentials obtained from your security credentials in AWS management console. Ensure the variable names are all capitals and values are all a single line of text
+![](images/CDawscreds.png)
 3. `cat ~/.ssh/ServianSSHKeyPair.pub | pbcopy` outputs file's contents & copies them. Add an environment variable, **TF_VAR_public_key**, paste the output into the value field
+![](images/CDPublicKey.png)
 4. Select SSH Keys section of project settings menu and repeat the same command in step 3 but with `~/.ssh/ServianSSHKeyPair`. Add SSH Key, paste the output into the private key field and leave the hostname blank so that the key is used for all hosts
+![](images/CDPrivateKey.png)
 
 Pipeline is ready to commit `config.yml` to the master branch, automatically initiating it
 
@@ -117,10 +127,14 @@ Ensure all steps in local dependencies & local setup are completed prior to atte
 To see a fully configured & operational application on AWS through local terminal:
 - change current directory to within infra folder
 - `make init` (connection to the remote backend built in local setup is established here)
+![](images/backendremoteconn.png)
 - `make up` (scaffold all AWS resources required to run the application)
+![](images/maininfradeploy.png)
 - change current directory to within ansible folder
 - `sh run_ansible.sh` (once this is done, change back to infra folder)
-- `make albendpoint` & paste it into a browser (response from aurora db might be delayed)
+![](images/confdeployapp.png)
+- `make albendpoint` & paste into a browser (response from aurora db might delay due to its serverless nature so to quicken the process - add an entry)
+![](images/localdeployapp.png)
 
 ## Pipeline Deploy
 
@@ -134,9 +148,10 @@ To see a fully configured & operational application on AWS through CircleCI CD P
 # Cleanup Instructions
 
 To destroy the application and associated cloud infra:
-- change current directory to within infra folder & `make init` to access remote state file
+- change current directory to within infra folder (if unable to `make down` immediately, `make init` to access remote state file) 
 - IF Error: Invalid legacy provider address, `terraform state replace-provider -- -/aws hashicorp/aws` to update provider in state file by upgrading the syntax. Re-run `make init`
 - `make down` (able to delete infra locally because local is connected to remote backend)
+![](images/maininfradestroy.png)
 
 Remote backend must be manually destroyed as it is protected:
 - Head to AWS s3 Management Console, navigate to tf-state-s3654762-bucket
