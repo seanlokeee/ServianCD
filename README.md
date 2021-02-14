@@ -163,7 +163,6 @@ Remote backend must be manually destroyed as it is protected:
 - Select list versions, select all and click delete
 ![](images/listversions.png)
 - Proceed to delete the s3 bucket as terraform state files have been deleted
-![](images/deletebucket.png)
 - Head to dynamoDB tables and delete tf-state-lock-dynamodb (lock table)
 ![](images/dynamoDB.png)
 
