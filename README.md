@@ -142,8 +142,12 @@ Ensure **REMOTE BACKEND INFRA** step from local setup is completed and all steps
 
 To see a fully configured & operational application on AWS through CircleCI CD Pipeline:
 - push into a branch & merge pull request to trigger the master branch or manually trigger the pipeline build in CircleCI (local terraform version should be same as image version)
+![](images/CDPipeline.png)
 - when the pipeline completes scaffold-infra job, note down alb_endpoint in CircleCI output
+![](images/CDmaininfradeploy.png)
+![](images/CDconfdeployapp.png)
 - once pipeline has finished, paste alb_endpoint noted down earlier into a browser
+![](images/CDdeployapp.png)
 
 # Cleanup Instructions
 
